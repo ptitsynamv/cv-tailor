@@ -1,0 +1,23 @@
+# Fictional contact data for the demo profile.
+
+name: Alex Doe
+headline: Senior Frontend Engineer (Angular)
+location: Remote, EU
+email: alex.doe@example.com
+phone: "+00 000 000 000"
+website: ""
+
+social_networks:
+  - { network: LinkedIn, username: alex-doe-demo }
+  - { network: GitHub, username: alex-doe-demo }
+
+preferences:
+  work_format: Remote
+  employment_types: [Full-time, B2B Contractor]
+  timezone: "CET (UTC+1 / UTC+2)"
+  overlap: "4+ hours overlap with EU and US East"
+  availability: "Notice period 1 month"
+  relocation: false
+  english_level: "C1 / Advanced"
+  desired_rate_usd_hour: null
+  desired_salary: ""

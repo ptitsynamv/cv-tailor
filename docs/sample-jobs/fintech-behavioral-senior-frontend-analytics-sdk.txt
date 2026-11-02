@@ -1,0 +1,35 @@
+Senior Frontend Engineer (Analytics SDK & Dashboard)
+
+We’re looking for a Senior Frontend Engineer (part-time consultant, 20-30 hours per week, with the option to grow from part-time to full-time) to own the customer-facing products of an early-stage US behavioral intelligence platform for fintech and banking, covering a lightweight JavaScript SDK, session data streaming, and a fraud-monitoring dashboard.
+
+In this role, you’ll own the full customer-facing surface — from the browser SDK that collects behavioral signals through data delivery to the dashboard where clients see the results. At first, you’ll keep the current client integration stable and be ready to step in quickly if something breaks. Over time, you’ll build on it as client requests grow. This is a great opportunity for someone with deep browser and JavaScript expertise who enjoys owning a product end-to-end, caring about every kilobyte of bundle size, and working directly with a small, hands-on leadership team (VP of Product, VP of Data Science, CEO).
+
+Your responsibilities will include:
+Build and maintain a dependency-free, vanilla JS browser SDK with strict control of bundle size and global CDN delivery;
+Own session recording and streaming: recorder, player, and batched, deduplicated data delivery to the data platform;
+Handle user consent and graceful degradation when browser APIs are blocked;
+Build the customer-facing fraud-monitoring dashboard and take it from prototype to production;
+Deliver a real-time session view and clear presentation of bot/fraud classification;
+Keep dashboard data fresh and correct, and maintain data contracts between the warehouse and the UI;
+Maintain quality with Jest, Playwright e2e, ESLint/pre-commit checks, and a bundle-size gate that actually blocks releases;
+Keep the current client integration stable and step in quickly when something breaks;
+Grow the product as client requests expand, including a possible move into mobile.
+
+What we expect from you:
+5+ years of production JS/TS experience, including at least 2 years on performance-critical client-side code (SDKs, browser tooling, embedded web);
+Deep browser knowledge: event loop, timing accuracy, cross-origin, feature detection, iOS Safari / Android Chrome / Electron compatibility;
+Experience maintaining or vendoring a third-party JS library or fork (upstream tracking, backports, release discipline);
+Hands-on experience with Rollup, Babel, minification/obfuscation trade-offs, and bundle-size analysis;
+A dependency-free approach by default, with the ability to justify every dependency;
+Experience with unit and e2e tests in CI (GitHub Actions), including regressions in headless, datacenter, and bot-like browser environments;
+Readiness to own a backend-adjacent surface: a Python dashboard, its API, and BigQuery queries
+Ability to read wire and contract specifications;
+English B2+ for communication with C-level stakeholders;
+Based in Europe (Ukraine/Poland preferred) or the US, with availability for roughly 9:00-13:00 Pacific overlap (not daily, mostly check-ins and onboarding).
+
+Nice to have:
+Experience with behavioral biometrics, bot detection, captcha/anti-fraud, or browser fingerprinting;
+Familiarity with W3C/WHATWG specifications (Pointer Events, Input Events, Media Capabilities, EME);
+Experience with real-time charts, large-table performance, and D3 or similar;
+Experience with BigQuery/Parquet;
+Experience publishing a public npm package (versioning, breaking changes, deprecation).

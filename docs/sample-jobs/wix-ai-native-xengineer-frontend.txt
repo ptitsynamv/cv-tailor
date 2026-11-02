@@ -1,0 +1,25 @@
+AI-native xEngineer (with Frontend core)
+
+As a AI-native xEngineer, you’ll design and own end-to-end user experiences that impact over 200 million users, working with an AI-native focus to craft high-quality, scalable, and resilient frontend products. In your day-to-day, you will:
+
+Design and own end-to-end systems and features that serve millions of users, taking responsibility across stack boundaries — from product flows and user experience to APIs, data models, and production systems
+Focus on frontend architecture, making thoughtful trade-offs around performance, scalability, accessibility, and long-term maintainability
+Apply AI-powered tools and workflows across planning, design, implementation, testing, debugging, and refactoring
+Work with modern technologies and platforms (e.g., TypeScript, React, Node.js, Java, cloud, and CI/CD), continuously evolving your toolkit with AI-powered tools
+Lead architectural thinking by making thoughtful trade-offs around scalability, reliability, security, performance, and maintainability
+Collaborate closely with product managers, designers, and engineers to shape solutions while ensuring production quality, observability, and long-term system health
+At Wix, we believe our best work happens together. Our work model is fully in person, with 5 days a week from our office. Flexibility remains a core value at Wix and special requests are handled thoughtfully at the team level.
+
+Requirements
+
+5+ years of experience in frontend development, with a proven track record of working at scale and owning real production systems
+Expertise in modern JavaScript frameworks (React, Angular, or Vue) and a mastery of TypeScript and modern build tools
+Experience using AI tools as part of your engineering workflow, with the ability to evaluate, validate, and iterate on AI-generated UI and logic
+Strong understanding of frontend fundamentals: performance optimization, accessibility (a11y), and testing
+Curiosity for how systems work end-to-end: from product behavior and UX to data flows and deployment pipelines
+A mindset that values product impact, technical excellence, and continuous learning in a fast-evolving AI-driven environment
+Ability to work independently, share knowledge, and adopt best practices in a highly collaborative team
+
+About the Team
+
+We are Wix’s Frontend Engineering group.

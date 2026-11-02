@@ -1,0 +1,49 @@
+Senior Fullstack Developer
+Playtech‘s Marketplace and Engagement Games Product Team is looking for a detail-oriented Senior Fullstack Developer with excellent communication and problem-solving skills.
+
+Lead the design, development, and evolution of complex web applications using React, Redux, ES6+, Node.js, and related technologies.1
+Own features end-to-end — from technical design and architecture decisions to implementation, testing, deployment, and post-release support.
+Architect scalable, high-performance systems ensuring optimal front-end responsiveness and backend efficiency.
+Design and maintain robust RESTful APIs and scalable backend services.
+Drive improvements in code quality, maintainability, security, and performance across the stack.
+Review code, mentor developers, and promote engineering best practices within the team.
+Participate in architectural discussions and influence long-term technical strategy.
+Optimize application performance across frontend, middleware, and backend layers.
+Collaborate closely with DevOps to ensure reliable CI/CD pipelines and production stability.
+Work cross-functionally with Product, QA, and other teams to refine requirements and deliver high-quality features.
+Proactively identify technical debt and drive refactoring initiatives.
+Components for success. You...
+
+Have 5+ years of professional experience in full stack development.
+Have strong proven experience building complex, customer-facing web applications at scale.
+Possess deep expertise in JavaScript (ES6+) and solid experience with TypeScript.
+Demonstrate strong proficiency in React ecosystem, including state management patterns and performance optimization.
+Have strong experience with Node.js and backend architectural patterns.
+Are experienced in designing and implementing REST APIs and service-oriented architectures.
+Have hands-on experience with MongoDB, Redis, and understand data modeling and caching strategies.
+Understand system design principles, scalability challenges, and performance bottlenecks.
+Have experience working with CI/CD pipelines and production environments.
+Have practical experience with TDD/BDD and writing automated tests.
+Use Git confidently in collaborative environments.
+Demonstrate excellent problem-solving skills and engineering judgment.
+Communicate clearly and effectively with both technical and non-technical stakeholders.
+Take ownership and drive initiatives independently.
+You’ll get extra points for...
+
+Strong TypeScript expertise.
+Experience with distributed systems or microservices architectures.
+Game development experience.
+Familiarity with CSS methodologies like BEM, OOCSS, or SMACSS.
+Experience mentoring developers or leading technical initiatives.
+Thrive in a culture that values...
+
+Technical excellence and engineering ownership.
+Initiative-taking and confident decision-making.
+Strong team environment and the ability work with the most recent market-leading technologies.
+Initiative-taking and confident approach at the workplace.
+Global scope and inclusive working environment where you can engage with diverse teams and perspectives.
+Constant learning and development opportunities and professional growth programs.
+Active lifestyle and mental well-being, supported through sports classes, master classes, and monthly well-being activities.
+Medical insurance.
+Paid vacation days, sick leaves and national holidays.
+Fully-equipped cosy office space located in the city centre (Gulliver, “Palats Sportu” metro station).
