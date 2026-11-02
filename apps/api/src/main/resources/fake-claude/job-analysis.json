@@ -1,0 +1,45 @@
+{
+  "title": "AI-native xEngineer (with Frontend core)",
+  "company": "Wix",
+  "seniority": "SENIOR",
+  "mustHave": [
+    "5+ years of experience in frontend development",
+    "Proven track record of working at scale and owning real production systems",
+    "Expertise in modern JavaScript frameworks (React, Angular, or Vue)",
+    "Mastery of TypeScript",
+    "Mastery of modern build tools",
+    "Experience using AI tools as part of the engineering workflow, with the ability to evaluate, validate and iterate on AI-generated UI and logic",
+    "Strong understanding of performance optimization",
+    "Strong understanding of accessibility (a11y)",
+    "Strong understanding of testing",
+    "Curiosity for how systems work end-to-end: from product behavior and UX to data flows and deployment pipelines",
+    "A mindset that values product impact, technical excellence and continuous learning",
+    "Ability to work independently, share knowledge and adopt best practices in a collaborative team",
+    "Fully in-person work, 5 days a week from the office"
+  ],
+  "niceToHave": [
+    "React",
+    "Node.js",
+    "Java",
+    "Cloud",
+    "CI/CD"
+  ],
+  "keywords": [
+    "AI-native",
+    "AI-powered tools",
+    "Frontend architecture",
+    "TypeScript",
+    "React",
+    "Angular",
+    "Vue",
+    "Node.js",
+    "Java",
+    "Cloud",
+    "CI/CD",
+    "Performance optimization",
+    "Accessibility",
+    "Testing",
+    "Scalability",
+    "Observability"
+  ]
+}

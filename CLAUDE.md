@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`. The profile loader and `ClaudeService` (fake + real) exist; the three endpoints (Phase 3 onward) don't yet.
+Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`. The profile loader, `ClaudeService` (fake + real) and `POST /api/job-analysis` exist; gap analysis and documents (Phase 4 onward) don't yet.
 
 **Scope rule:** the MVP is exactly three features: job analysis, gap analysis, and tailored CV + cover letter PDFs. Anything else belongs in the plan's "Later" table. Don't add it unprompted.
 
@@ -56,6 +56,16 @@ POST /api/documents      JobAnalysis + Gaps → TailoredCv + CoverLetter (call 3
   - Colliding slugs get a `-2`, `-3`, ... suffix.
   - Bullets under the skills-matrix "Not evidenced" heading become `Profile.doNotClaim()`. They're rendered without ids, so they can't be cited.
   - `Profile.render()` produces the `[id] text` block Claude reads. Its output must stay deterministic (sorted files, no timestamps) so the prompt cache hits.
+- **Each step is one feature package.** `job` is the pattern for the others:
+  - A controller validates a request record with Bean Validation.
+  - A service holds the prompt as a `static final` text block and calls `ClaudeService` with a step name. The step name is also the fixture name.
+  - The output record carries `@JsonPropertyDescription` (`com.fasterxml.jackson.annotation`, which both Jackson 2 and 3 read). Those descriptions go into the structured-output schema.
+  - Use enums for closed sets.
+- **Errors:** errors are returned as problem JSON (`spring.mvc.problemdetails.enabled`). Validation failures are 400. `ClaudeExceptionHandler` maps `ClaudeException` and SDK errors to 502.
+- **Tests per step:**
+  - A `@WebMvcTest` with `@MockitoBean ClaudeService`.
+  - A `*SchemaTest` that builds the real `.outputConfig(Record.class)` params, so schema problems surface without a key.
+  - A `*FakeModeTest` (`@SpringBootTest(properties = "ANTHROPIC_API_KEY=")`) that posts a `docs/sample-jobs` file through the whole app.
 - **No-invention guardrail** (central to the project):
   - Gap analysis: STRONG/PARTIAL items must cite evidence ids. In code, any returned id that isn't in the loaded profile turns the item into a GAP and is logged.
   - Documents: Claude writes only the summary, bullets and letter text. Contact details and education are copied **from the profile in code**, not from the model. Prompts say: use only profile facts, reword but never inflate, CV 1–2 pages, letter ≤ 250 words, ATS-friendly section names.
