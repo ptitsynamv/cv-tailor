@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Pre-scaffold. The repo currently holds only `LICENSE` and `ai-project-plan.md`, the build plan and the source of truth for scope, phases and design. Read it before starting work, and tick its checkboxes as phases are completed. Update this file when real build commands and code exist.
+Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`; the features from Phase 2 onward don't exist yet.
 
 **Scope rule:** the MVP is exactly three features: job analysis, gap analysis, and tailored CV + cover letter PDFs. Anything else belongs in the plan's "Later" table. Don't add it unprompted.
 
@@ -49,8 +49,21 @@ POST /api/documents      JobAnalysis + Gaps → TailoredCv + CoverLetter (call 3
 
 Note: the global Angular rules in `~/.claude/rules/angular.md` and the `ermes-frontend` skill target a different repo (Angular 16 + NgRx + PrimeNG, `slg-` prefix, `$localize`, `markForCheck`). They don't apply here. Use the modern zoneless/Signals idioms instead.
 
-## Commands (planned, per the plan; verify once scaffolded)
+## Commands
 
-- Backend build + tests: `./gradlew build` in `apps/api`. Tests are JUnit 5 + Mockito, with Claude mocked.
-- Frontend: `npm ci && npm run build` in `apps/web`.
-- CI (GitHub Actions) runs both on every push. Run a secret scanner (e.g. gitleaks) before making the repo public.
+Backend (`apps/api`, Spring Boot 4.1, Java 25 toolchain, Gradle wrapper, base package `io.github.ptitsynamv.cvtailor`, one sub-package per feature):
+
+- Build + all tests: `./gradlew build`
+- Run on :8080: `./gradlew bootRun`
+- Single test class / method: `./gradlew test --tests HealthControllerTest` / `--tests 'HealthControllerTest.healthReturnsUpWithServiceName'`
+- Boot 4 uses split starters (`spring-boot-starter-webmvc`, `...-webmvc-test`); `@WebMvcTest` lives in `org.springframework.boot.webmvc.test.autoconfigure`.
+- Tests are JUnit 5 + Mockito. Claude must always be mocked.
+
+Frontend (`apps/web`, Angular 22, zoneless, Tailwind 4, Vitest):
+
+- Dev server: `npm start` (port 4200; `proxy.conf.json` forwards `/api` to :8080, so run `bootRun` too). Port 4200 is often taken by another local project; use `npx ng serve --port 4300` then.
+- Build: `npm run build`
+- Tests: `npx ng test --watch=false`. Run a single file with `npx ng test --watch=false --include src/app/app.spec.ts`.
+- HTTP is read with `httpResource`. In specs, use `TestBed.tick()` before `HttpTestingController.expectOne` instead of `whenStable()`, which waits on the pending request and hangs.
+
+CI (GitHub Actions, Phase 7) will run `./gradlew build` and `npm ci && npm run build` on every push. Run a secret scanner (e.g. gitleaks) before pushing anything sensitive-looking; the repo is already public.

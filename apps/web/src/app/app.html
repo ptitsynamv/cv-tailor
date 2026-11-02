@@ -1,0 +1,15 @@
+<main class="mx-auto max-w-2xl px-4 py-8">
+  <h1 class="text-2xl font-semibold">cv-tailor</h1>
+
+  @if (health.isLoading()) {
+    <p class="mt-4 text-gray-600">Checking the API…</p>
+  } @else if (health.error()) {
+    <p class="mt-4 text-red-700" role="alert">
+      The API is unreachable. Is the backend running on port 8080?
+    </p>
+  } @else if (health.hasValue()) {
+    <p class="mt-4">
+      API status: <strong>{{ health.value().status }}</strong> ({{ health.value().service }})
+    </p>
+  }
+</main>
