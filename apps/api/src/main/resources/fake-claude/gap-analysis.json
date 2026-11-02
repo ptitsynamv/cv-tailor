@@ -1,0 +1,112 @@
+{
+  "items": [
+    {
+      "requirement": "5+ years of experience in frontend development",
+      "status": "STRONG",
+      "evidenceIds": ["exp-brightpathlogistics", "exp-lumenledger", "skill-angular"],
+      "note": "Frontend roles at Brightpath Logistics and Lumen Ledger since Mar 2019."
+    },
+    {
+      "requirement": "Proven track record of working at scale and owning real production systems",
+      "status": "PARTIAL",
+      "evidenceIds": ["exp-lumenledger-1", "exp-brightpathlogistics-8"],
+      "note": "Owns the frontend of a production B2B platform and a live map for about 1,200 vehicles, but no user numbers near this scale."
+    },
+    {
+      "requirement": "Expertise in modern JavaScript frameworks (React, Angular, or Vue)",
+      "status": "STRONG",
+      "evidenceIds": ["skill-angular", "exp-lumenledger-3", "exp-lumenledger-8"],
+      "note": "6+ years of Angular, including a migration to standalone components and Signals."
+    },
+    {
+      "requirement": "Mastery of TypeScript",
+      "status": "STRONG",
+      "evidenceIds": ["skill-typescript", "exp-lumenledger-3"],
+      "note": "6+ years of commercial TypeScript."
+    },
+    {
+      "requirement": "Mastery of modern build tools",
+      "status": "PARTIAL",
+      "evidenceIds": ["exp-lumenledger-13", "exp-lumenledger-10"],
+      "note": "Nx monorepo and bundle-size work, but no bundler such as Vite or webpack is named."
+    },
+    {
+      "requirement": "Experience using AI tools as part of the engineering workflow, with the ability to evaluate, validate and iterate on AI-generated UI and logic",
+      "status": "STRONG",
+      "evidenceIds": ["proj-ai-code-reviewer"],
+      "note": "Built an AI code-review assistant."
+    },
+    {
+      "requirement": "Strong understanding of performance optimization",
+      "status": "STRONG",
+      "evidenceIds": ["exp-lumenledger-10", "exp-lumenledger-14", "exp-brightpathlogistics-13"],
+      "note": "Cut the initial bundle by 38% and optimized real-time map updates."
+    },
+    {
+      "requirement": "Strong understanding of accessibility (a11y)",
+      "status": "STRONG",
+      "evidenceIds": ["skill-accessibility-wcag-2-1-aa", "exp-lumenledger-15"],
+      "note": "Component library meets WCAG 2.1 AA."
+    },
+    {
+      "requirement": "Strong understanding of testing",
+      "status": "STRONG",
+      "evidenceIds": ["skill-unit-testing-jest", "skill-e2e-testing-cypress", "exp-lumenledger-11", "exp-brightpathlogistics-11"],
+      "note": "Unit and E2E testing in CI, and raised unit test coverage from 20% to 70%."
+    },
+    {
+      "requirement": "Curiosity for how systems work end-to-end: from product behavior and UX to data flows and deployment pipelines",
+      "status": "PARTIAL",
+      "evidenceIds": ["exp-brightpathlogistics-2", "exp-lumenledger-16", "proj-route-notes-api"],
+      "note": "Works on API contracts and built a REST API side project; deployment pipelines appear only as CI usage."
+    },
+    {
+      "requirement": "A mindset that values product impact, technical excellence and continuous learning",
+      "status": "PARTIAL",
+      "evidenceIds": ["exp-lumenledger-8", "proj-budget-buddy"],
+      "note": "Modernized the app without pausing product work and tried zoneless Angular in a side project; show the mindset in the cover letter."
+    },
+    {
+      "requirement": "Ability to work independently, share knowledge and adopt best practices in a collaborative team",
+      "status": "STRONG",
+      "evidenceIds": ["exp-lumenledger-9", "exp-lumenledger-12", "skill-code-review"],
+      "note": "Built a shared library for 3 teams, mentors engineers and runs code review."
+    },
+    {
+      "requirement": "Fully in-person work, 5 days a week from the office",
+      "status": "GAP",
+      "evidenceIds": [],
+      "note": "The profile can't confirm office attendance, and past roles were remote or hybrid; the candidate should confirm it."
+    },
+    {
+      "requirement": "React",
+      "status": "GAP",
+      "evidenceIds": [],
+      "note": "React in production is listed as not evidenced."
+    },
+    {
+      "requirement": "Node.js",
+      "status": "PARTIAL",
+      "evidenceIds": ["skill-node-js-express", "proj-route-notes-api"],
+      "note": "Side project only, no commercial use."
+    },
+    {
+      "requirement": "Java",
+      "status": "GAP",
+      "evidenceIds": [],
+      "note": "No Java in the profile."
+    },
+    {
+      "requirement": "Cloud",
+      "status": "PARTIAL",
+      "evidenceIds": ["cert-aws-certified-cloud-practitioner-clf-c02", "skill-aws-basics"],
+      "note": "Foundational AWS certification only, no hands-on cloud work."
+    },
+    {
+      "requirement": "CI/CD",
+      "status": "STRONG",
+      "evidenceIds": ["skill-ci-cd-gitlab-ci", "exp-lumenledger-11"],
+      "note": "4 years of GitLab CI, including E2E tests in the pipeline."
+    }
+  ]
+}

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`. The profile loader, `ClaudeService` (fake + real) and `POST /api/job-analysis` exist; gap analysis and documents (Phase 4 onward) don't yet.
+Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`. The profile loader, `ClaudeService` (fake + real), `POST /api/job-analysis` and `POST /api/gap-analysis` exist; documents/PDFs (Phase 5 onward) don't yet.
 
 **Scope rule:** the MVP is exactly three features: job analysis, gap analysis, and tailored CV + cover letter PDFs. Anything else belongs in the plan's "Later" table. Don't add it unprompted.
 
@@ -67,7 +67,11 @@ POST /api/documents      JobAnalysis + Gaps → TailoredCv + CoverLetter (call 3
   - A `*SchemaTest` that builds the real `.outputConfig(Record.class)` params, so schema problems surface without a key.
   - A `*FakeModeTest` (`@SpringBootTest(properties = "ANTHROPIC_API_KEY=")`) that posts a `docs/sample-jobs` file through the whole app.
 - **No-invention guardrail** (central to the project):
-  - Gap analysis: STRONG/PARTIAL items must cite evidence ids. In code, any returned id that isn't in the loaded profile turns the item into a GAP and is logged.
+  - Gap analysis: STRONG/PARTIAL items must cite evidence ids. `gap.EvidenceGuardrail` runs on every Claude answer and logs each change:
+    - Any cited id that isn't in the loaded profile turns the item into a GAP, with no evidence and a note starting `Guardrail:`.
+    - A STRONG/PARTIAL item with no ids becomes a GAP too.
+    - A GAP keeps only its valid ids.
+    - The `gap-analysis.json` fixture cites one invented id on purpose, so the guardrail is visible in fake mode. Keep it.
   - Documents: Claude writes only the summary, bullets and letter text. Contact details and education are copied **from the profile in code**, not from the model. Prompts say: use only profile facts, reword but never inflate, CV 1–2 pages, letter ≤ 250 words, ATS-friendly section names.
 - **PDF:** Thymeleaf templates (`cv.html`, `cover-letter.html`) → OpenHTMLtoPDF. One-column, ATS-friendly CSS, no tables or icons.
 - **Frontend:** Angular 21+, standalone, **zoneless**, Signals, Tailwind. One page with three steps (paste job → gaps table → document preview + 2 PDF downloads), with state in a small signals-based service. Calls the API through the dev-server proxy. Each step needs loading and error states, and focus moves to each new step's heading.
