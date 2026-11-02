@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`; the features from Phase 2 onward don't exist yet.
+Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`. The profile loader and `ClaudeService` (fake + real) exist; the three endpoints (Phase 3 onward) don't yet.
 
 **Scope rule:** the MVP is exactly three features: job analysis, gap analysis, and tailored CV + cover letter PDFs. Anything else belongs in the plan's "Later" table. Don't add it unprompted.
 
@@ -39,8 +39,23 @@ POST /api/documents      JobAnalysis + Gaps → TailoredCv + CoverLetter (call 3
 
 - **Backend:** Java 21/25 LTS, Spring Boot (Web, Validation), Gradle. Anthropic Java SDK (`com.anthropic:anthropic-java`), model `claude-opus-5-5`.
 - **Claude features:** only **structured outputs** (every response maps to a typed Java record via `.outputConfig(X.class)`) and **prompt caching** (the profile block). Check `stopReason()` before reading content.
-- **`ClaudeService`** wraps the SDK client (a `@Bean` built with `AnthropicOkHttpClient.fromEnv()`) so tests can mock it. Tests must never call the real API.
-- **`ProfileLoader`** reads the Markdown files from `PROFILE_DIR` (`experience/*/data.md`, `projects/registry.md`, `profile/skills-matrix.md`, `certificates/data.md`, `education/data.md`), gives each item a stable id (`exp-<company>-<n>`, `proj-<slug>`, `cert-<slug>`), and renders one text block with `[id]` markers. That block is what Claude reads and cites.
+- **`ClaudeService`** (package `claude`) has one generic method, `<T> T generate(ClaudeRequest, Class<T>)`. `ClaudeRequest(step, instructions, profile, userMessage)` carries the step name, the system prompt, the rendered profile (nullable) and the user input. There are two implementations, chosen in `ClaudeConfig` by custom conditions, which treat an empty key as missing:
+  - `AnthropicClaudeService` is created only when `ANTHROPIC_API_KEY` is set.
+    - Requests use structured outputs via `.outputConfig(type)`.
+    - The system blocks are the profile first, marked `cache_control`, then the step instructions. This keeps the cache prefix shared across steps.
+    - Server-side refusal fallbacks are on: the `fallbacks: "default"` body property plus the `server-side-fallback-2026-07-01` beta header.
+    - It throws `ClaudeException` unless `stopReason == END_TURN`, and it logs token usage, including cache reads and writes.
+    - SDK `com.anthropic:anthropic-java:3.2.0`.
+  - `FakeClaudeService` returns `src/main/resources/fake-claude/<step>.json` parsed into the record type. It's active whenever there's no key. Write fixtures for `demo-profile`, using its real ids.
+  - The user has no API key yet, so fake mode is the default way to run and demo the app. The app must start and work end to end without a key. Plan steps marked 🔑 need the real key; don't attempt them. Tests and CI never call the real API.
+- **`ProfileLoader`** (package `profile`) reads `app.profile.dir`, set from `PROFILE_DIR` with default `../../demo-profile` relative to `apps/api`. It re-reads the files on every `load()`. Ids:
+  - `exp-<folder>` for the role summary, and `exp-<folder>-<n>` for each bullet.
+  - `proj-<slug>` from the first table in `registry.md`.
+  - `skill-<slug>` from every skills-matrix table.
+  - `cert-<slug>` and `edu-<slug>` from the first table in each file.
+  - Colliding slugs get a `-2`, `-3`, ... suffix.
+  - Bullets under the skills-matrix "Not evidenced" heading become `Profile.doNotClaim()`. They're rendered without ids, so they can't be cited.
+  - `Profile.render()` produces the `[id] text` block Claude reads. Its output must stay deterministic (sorted files, no timestamps) so the prompt cache hits.
 - **No-invention guardrail** (central to the project):
   - Gap analysis: STRONG/PARTIAL items must cite evidence ids. In code, any returned id that isn't in the loaded profile turns the item into a GAP and is logged.
   - Documents: Claude writes only the summary, bullets and letter text. Contact details and education are copied **from the profile in code**, not from the model. Prompts say: use only profile facts, reword but never inflate, CV 1–2 pages, letter ≤ 250 words, ATS-friendly section names.
@@ -57,7 +72,9 @@ Backend (`apps/api`, Spring Boot 4.1, Java 25 toolchain, Gradle wrapper, base pa
 - Run on :8080: `./gradlew bootRun`
 - Single test class / method: `./gradlew test --tests HealthControllerTest` / `--tests 'HealthControllerTest.healthReturnsUpWithServiceName'`
 - Boot 4 uses split starters (`spring-boot-starter-webmvc`, `...-webmvc-test`); `@WebMvcTest` lives in `org.springframework.boot.webmvc.test.autoconfigure`.
-- Tests are JUnit 5 + Mockito. Claude must always be mocked.
+- Tests are JUnit 5 + Mockito. Claude must always be mocked. Profile tests read `../../demo-profile`.
+- Check the loader against the private profile. This prints only counts and ids, and is skipped unless the env var is set: `CAREER_OPS_DIR=../../../career-ops ./gradlew test --tests CareerOpsProfileCheck -i`. Never print or commit real profile text.
+- Spring Boot 4 uses Jackson 3 (`tools.jackson.*`, inject `JsonMapper`). The Anthropic SDK brings its own Jackson 2 internally; don't mix the two in app code.
 
 Frontend (`apps/web`, Angular 22, zoneless, Tailwind 4, Vitest):
 
