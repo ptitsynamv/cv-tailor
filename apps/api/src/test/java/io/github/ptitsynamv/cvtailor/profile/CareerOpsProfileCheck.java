@@ -2,7 +2,6 @@ package io.github.ptitsynamv.cvtailor.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
@@ -21,7 +20,7 @@ class CareerOpsProfileCheck {
 
 	@Test
 	void loadsTheRealProfile() {
-		Profile profile = new ProfileLoader(new ProfileProperties(Path.of(System.getenv("CAREER_OPS_DIR")))).load();
+		Profile profile = new ProfileLoader(new ProfileProperties(System.getenv("CAREER_OPS_DIR"))).load();
 
 		Map<ProfileSection, Long> counts = Arrays.stream(ProfileSection.values())
 				.collect(Collectors.toMap(Function.identity(),

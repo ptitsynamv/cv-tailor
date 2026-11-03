@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import io.github.ptitsynamv.cvtailor.common.Slug;
+
 /** Just enough Markdown parsing for the career-ops files: headings, bullets and pipe tables. */
 final class Markdown {
 
 	private static final Pattern SEPARATOR_ROW = Pattern.compile("^\\|[\\s:|-]+\\|$");
-	private static final Pattern NON_SLUG_CHARS = Pattern.compile("[^a-z0-9]+");
 
 	private Markdown() {
 	}
@@ -73,10 +74,8 @@ final class Markdown {
 		return text.replace("**", "").replace("`", "").strip();
 	}
 
-	/** {@code "Bachelor’s Degree"} becomes {@code "bachelors-degree"}. */
 	static String slug(String text) {
-		String noApostrophes = clean(text).toLowerCase().replace("’", "").replace("'", "");
-		return NON_SLUG_CHARS.matcher(noApostrophes).replaceAll("-").replaceAll("^-+|-+$", "");
+		return Slug.of(clean(text));
 	}
 
 	private static Table toTable(List<String> block) {

@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Reads a profile folder in the career-ops layout and turns it into citable {@link ProfileItem}s.
@@ -36,7 +38,7 @@ public class ProfileLoader {
 	private final Path profileDir;
 
 	public ProfileLoader(ProfileProperties properties) {
-		this.profileDir = properties.dir().toAbsolutePath().normalize();
+		this.profileDir = Path.of(properties.dir()).toAbsolutePath().normalize();
 	}
 
 	/** Reads the files on every call, so profile edits show up without a restart. */
@@ -54,7 +56,7 @@ public class ProfileLoader {
 		items.addAll(firstTableRows("certificates/data.md", ProfileSection.CERTIFICATE, "cert", usedIds));
 		items.addAll(firstTableRows("education/data.md", ProfileSection.EDUCATION, "edu", usedIds));
 
-		Profile profile = new Profile(items, doNotClaim());
+		Profile profile = new Profile(items, doNotClaim(), contact());
 		log.info("Loaded profile from {}: {} items", profileDir, items.size());
 		return profile;
 	}
@@ -85,13 +87,22 @@ public class ProfileLoader {
 		List<String> facts = new ArrayList<>(List.of(company));
 		facts.addAll(Markdown.bullets(Markdown.preamble(lines)));
 
+		// "Role / Title: Senior Frontend Engineer" becomes the field "Role / Title".
+		Map<String, String> fields = new LinkedHashMap<>();
+		for (String fact : facts) {
+			int colon = fact.indexOf(": ");
+			if (colon > 0) {
+				fields.put(fact.substring(0, colon).strip(), fact.substring(colon + 2).strip());
+			}
+		}
+
 		List<ProfileItem> items = new ArrayList<>();
-		items.add(new ProfileItem(baseId, ProfileSection.EXPERIENCE, String.join(" | ", facts)));
+		items.add(new ProfileItem(baseId, ProfileSection.EXPERIENCE, String.join(" | ", facts), fields));
 		for (Map.Entry<String, List<String>> section : Markdown.sections(lines).entrySet()) {
 			String label = HEADING_DECORATION.matcher(section.getKey()).replaceAll("");
 			for (String bullet : Markdown.bullets(section.getValue())) {
 				String id = uniqueId(baseId + "-" + items.size(), usedIds);
-				items.add(new ProfileItem(id, ProfileSection.EXPERIENCE, label + ": " + bullet));
+				items.add(new ProfileItem(id, ProfileSection.EXPERIENCE, label + ": " + bullet, Map.of()));
 			}
 		}
 		return items;
@@ -117,6 +128,51 @@ public class ProfileLoader {
 				.toList();
 	}
 
+	private Contact contact() {
+		Path file = profileDir.resolve("profile/contacts.yaml");
+		if (!Files.isRegularFile(file)) {
+			log.warn("Profile file missing, skipped: {}", file);
+			return Contact.EMPTY;
+		}
+		Map<String, Object> yaml;
+		try (var reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+			yaml = new Yaml().load(reader);
+		}
+		catch (IOException e) {
+			throw new UncheckedIOException("Can't read " + file, e);
+		}
+		if (yaml == null) {
+			return Contact.EMPTY;
+		}
+
+		List<String> links = new ArrayList<>();
+		String website = text(yaml.get("website"));
+		if (!website.isEmpty()) {
+			links.add(website);
+		}
+		if (yaml.get("social_networks") instanceof List<?> networks) {
+			for (Object network : networks) {
+				if (network instanceof Map<?, ?> entry) {
+					links.add(link(text(entry.get("network")), text(entry.get("username"))));
+				}
+			}
+		}
+		return new Contact(text(yaml.get("name")), text(yaml.get("headline")), text(yaml.get("location")),
+				text(yaml.get("email")), text(yaml.get("phone")), links);
+	}
+
+	private static String link(String network, String username) {
+		return switch (network.toLowerCase()) {
+			case "linkedin" -> "linkedin.com/in/" + username;
+			case "github" -> "github.com/" + username;
+			default -> network + ": " + username;
+		};
+	}
+
+	private static String text(Object value) {
+		return value == null ? "" : value.toString().strip();
+	}
+
 	private Map<String, List<String>> skillSections() {
 		return Markdown.sections(readLines(profileDir.resolve("profile/skills-matrix.md")));
 	}
@@ -137,12 +193,15 @@ public class ProfileLoader {
 			if (row.isEmpty() || row.getFirst().isBlank()) {
 				continue;
 			}
-			String text = IntStream.range(0, Math.min(row.size(), table.headers().size()))
+			Map<String, String> fields = new LinkedHashMap<>();
+			IntStream.range(0, Math.min(row.size(), table.headers().size()))
 					.filter(i -> !row.get(i).isBlank())
-					.mapToObj(i -> table.headers().get(i) + ": " + row.get(i))
+					.forEach(i -> fields.put(table.headers().get(i), row.get(i)));
+			String text = fields.entrySet().stream()
+					.map(field -> field.getKey() + ": " + field.getValue())
 					.collect(Collectors.joining(" | "));
 			String id = uniqueId(prefix + "-" + Markdown.slug(row.getFirst()), usedIds);
-			items.add(new ProfileItem(id, section, text));
+			items.add(new ProfileItem(id, section, text, fields));
 		}
 		return items;
 	}

@@ -1,6 +1,7 @@
 package io.github.ptitsynamv.cvtailor.profile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -9,8 +10,9 @@ import java.util.stream.Collectors;
  *
  * @param items      evidence, in a stable order so the rendered text (and its prompt cache) doesn't change between runs
  * @param doNotClaim skills the profile explicitly lacks; rendered without ids, so they can never be cited
+ * @param contact    contact details; not part of {@link #render()}
  */
-public record Profile(List<ProfileItem> items, List<String> doNotClaim) {
+public record Profile(List<ProfileItem> items, List<String> doNotClaim, Contact contact) {
 
 	public Profile {
 		items = List.copyOf(items);
@@ -25,6 +27,14 @@ public record Profile(List<ProfileItem> items, List<String> doNotClaim) {
 		return items.stream().anyMatch(item -> item.id().equals(id));
 	}
 
+	public Optional<ProfileItem> item(String id) {
+		return items.stream().filter(item -> item.id().equals(id)).findFirst();
+	}
+
+	public List<ProfileItem> items(ProfileSection section) {
+		return items.stream().filter(item -> item.section() == section).toList();
+	}
+
 	/** Renders the profile as the text block Claude reads, one {@code [id] text} line per item. */
 	public String render() {
 		var text = new StringBuilder("""
@@ -32,7 +42,7 @@ public record Profile(List<ProfileItem> items, List<String> doNotClaim) {
 				Each evidence line starts with its id in [brackets].
 				""");
 		for (ProfileSection section : ProfileSection.values()) {
-			List<ProfileItem> sectionItems = items.stream().filter(item -> item.section() == section).toList();
+			List<ProfileItem> sectionItems = items(section);
 			if (sectionItems.isEmpty()) {
 				continue;
 			}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!-- Shared fragments for the PDF templates. Plain one-column layout: ATS parsers read it top to bottom. -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <style th:fragment="styles">
+    @page { size: A4; margin: 16mm 18mm; }
+    body { font-family: 'Noto Sans', 'Noto Sans Math', sans-serif; font-size: 10pt; line-height: 1.4; color: #1a1a1a; }
+    h1 { font-size: 20pt; font-weight: 700; margin: 0; }
+    h2 { font-size: 10.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6pt;
+         border-bottom: 0.75pt solid #8a8a8a; padding-bottom: 2pt; margin: 12pt 0 5pt; page-break-after: avoid; }
+    h3 { font-size: 10.5pt; font-weight: 700; margin: 8pt 0 0; page-break-after: avoid; }
+    p { margin: 0 0 4pt; }
+    ul { margin: 2pt 0 0; padding-left: 13pt; }
+    li { margin: 0 0 2pt; page-break-inside: avoid; }
+    .headline { font-size: 11pt; margin: 2pt 0 0; }
+    .contacts { font-size: 9pt; color: #333; margin: 3pt 0 0; }
+    .contacts .detail { white-space: nowrap; }
+    .meta { font-size: 9pt; color: #444; margin: 0; }
+    .letter p { margin: 0 0 9pt; }
+    .letter .date { margin-top: 14pt; }
+  </style>
+</head>
+<body>
+  <header th:fragment="header(contact)">
+    <h1 th:text="${contact.name}">Name</h1>
+    <p class="headline" th:if="${!contact.headline.isEmpty()}" th:text="${contact.headline}">Headline</p>
+    <!-- Each detail stays on one line: a URL broken across lines reaches ATS parsers as a broken link. -->
+    <p class="contacts"><th:block th:each="detail, state : ${contact.details()}"><span class="detail" th:text="${detail}">detail</span><th:block th:unless="${state.last}">  ·  </th:block></th:block></p>
+  </header>
+</body>
+</html>

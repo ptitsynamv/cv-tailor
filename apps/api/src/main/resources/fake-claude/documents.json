@@ -1,0 +1,113 @@
+{
+  "cv": {
+    "summary": [
+      {
+        "text": "Senior Frontend Engineer with 6+ years of Angular and TypeScript, leading the frontend of a B2B fintech platform.",
+        "evidenceIds": ["skill-angular", "skill-typescript", "exp-lumenledger-1"]
+      },
+      {
+        "text": "Focused on frontend architecture, performance and accessibility: migrated a production app to standalone components and Signals, cut the initial bundle by 38% and built WCAG 2.1 AA components used by three teams.",
+        "evidenceIds": ["exp-lumenledger-8", "exp-lumenledger-10", "exp-lumenledger-9", "exp-lumenledger-15"]
+      }
+    ],
+    "skills": [
+      {
+        "name": "Frontend",
+        "skills": ["Angular", "TypeScript", "RxJS", "Angular Signals", "Standalone Components", "HTML", "SCSS", "Tailwind CSS"],
+        "evidenceIds": ["skill-angular", "skill-typescript", "skill-rxjs", "skill-angular-signals-standalone-components", "skill-html-scss-tailwind-css"]
+      },
+      {
+        "name": "Architecture & Performance",
+        "skills": ["NgRx", "Nx monorepo", "Component libraries (Storybook)", "Lazy loading", "Bundle-size optimization"],
+        "evidenceIds": ["skill-ngrx", "exp-lumenledger-13", "skill-component-libraries-storybook", "exp-lumenledger-10"]
+      },
+      {
+        "name": "Testing & Accessibility",
+        "skills": ["Jest", "Cypress", "WCAG 2.1 AA", "ESLint", "Code review"],
+        "evidenceIds": ["skill-unit-testing-jest", "skill-e2e-testing-cypress", "skill-accessibility-wcag-2-1-aa", "exp-lumenledger-6", "skill-code-review"]
+      },
+      {
+        "name": "Delivery & APIs",
+        "skills": ["GitLab CI", "REST APIs", "OpenAPI", "Node.js and Express (side project)", "Docker (side project)"],
+        "evidenceIds": ["skill-ci-cd-gitlab-ci", "skill-rest-api-integration", "exp-lumenledger-16", "skill-node-js-express", "skill-docker"]
+      }
+    ],
+    "experience": [
+      {
+        "roleId": "exp-lumenledger",
+        "bullets": [
+          {
+            "text": "Lead the frontend of a B2B invoicing platform and a team of 4 engineers, owning frontend architecture, the shared component library and code-review standards.",
+            "evidenceIds": ["exp-lumenledger", "exp-lumenledger-1", "exp-lumenledger-2"]
+          },
+          {
+            "text": "Migrated the app from NgModules to standalone components and Signals over two quarters, feature by feature, without pausing product work.",
+            "evidenceIds": ["exp-lumenledger-8"]
+          },
+          {
+            "text": "Built a shared Angular component library of 32 components, documented in Storybook and used by 3 product teams.",
+            "evidenceIds": ["exp-lumenledger-9"]
+          },
+          {
+            "text": "Cut the initial bundle size by 38% with route-level lazy loading and by removing an unused charting library.",
+            "evidenceIds": ["exp-lumenledger-10"]
+          },
+          {
+            "text": "Made the library components meet WCAG 2.1 AA, with keyboard support, focus management and ARIA labels.",
+            "evidenceIds": ["exp-lumenledger-15"]
+          },
+          {
+            "text": "Added Cypress E2E tests for the invoice flow to GitLab CI.",
+            "evidenceIds": ["exp-lumenledger-11"]
+          }
+        ]
+      },
+      {
+        "roleId": "exp-brightpathlogistics",
+        "bullets": [
+          {
+            "text": "Built a live shipment map updated over WebSockets for about 1,200 active vehicles, using RxJS throttling to keep the UI smooth.",
+            "evidenceIds": ["exp-brightpathlogistics-8"]
+          },
+          {
+            "text": "Rebuilt the driver-assignment screen with NgRx, cutting the steps to assign a driver from 6 to 3.",
+            "evidenceIds": ["exp-brightpathlogistics-9"]
+          },
+          {
+            "text": "Raised unit test coverage of the core dispatch services from 20% to 70%.",
+            "evidenceIds": ["exp-brightpathlogistics-11"]
+          }
+        ]
+      }
+    ],
+    "projects": [
+      {
+        "projectId": "proj-budget-buddy",
+        "bullets": [
+          {
+            "text": "Built a zoneless Angular 20 budgeting app with signal-based state, offline storage in IndexedDB and an installable PWA.",
+            "evidenceIds": ["proj-budget-buddy"]
+          }
+        ]
+      },
+      {
+        "projectId": "proj-route-notes-api",
+        "bullets": [
+          {
+            "text": "Built a REST API with Node.js, Express and PostgreSQL, with JWT auth and Docker Compose.",
+            "evidenceIds": ["proj-route-notes-api"]
+          }
+        ]
+      }
+    ]
+  },
+  "coverLetter": {
+    "greeting": "Dear Hiring Team,",
+    "paragraphs": [
+      "I'm applying for the AI-native xEngineer (with Frontend core) role at Wix. I'm a Senior Frontend Engineer with 6+ years of Angular and TypeScript, and I lead the frontend of a B2B invoicing platform at Lumen Ledger.",
+      "Much of my work is the frontend architecture you describe. I migrated our production app to standalone components and Signals without pausing product work, built a 32-component library that three teams use, and cut our initial bundle by 38%. Our components meet WCAG 2.1 AA, and the core invoice flow is covered by Cypress tests in CI.",
+      "I want to be clear about where I would grow. My production experience is in Angular rather than React, and my Node.js work so far is a side project: a REST API with Express and PostgreSQL. I learn new approaches by building with them, as I did with a zoneless Angular app before bringing Signals to work.",
+      "I would welcome the chance to talk about how I could contribute to your Frontend Engineering group."
+    ]
+  }
+}

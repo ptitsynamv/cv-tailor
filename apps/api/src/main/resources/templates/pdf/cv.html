@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="${cv.contact.name} + ' – CV'">CV</title>
+  <style th:replace="~{pdf/common :: styles}"></style>
+</head>
+<body>
+  <header th:replace="~{pdf/common :: header(${cv.contact})}"></header>
+
+  <th:block th:if="${!cv.summary.isEmpty()}">
+    <h2>Summary</h2>
+    <p><span th:each="sentence : ${cv.summary}" th:text="${sentence.text} + ' '"></span></p>
+  </th:block>
+
+  <th:block th:if="${!cv.skills.isEmpty()}">
+    <h2>Skills</h2>
+    <p th:each="group : ${cv.skills}">
+      <strong th:text="${group.name} + ':'">Group:</strong>
+      <span th:text="${#strings.listJoin(group.skills, ', ')}">skills</span>
+    </p>
+  </th:block>
+
+  <h2>Experience</h2>
+  <th:block th:each="role : ${cv.experience}">
+    <h3 th:text="${role.company.isEmpty() ? role.title : role.title + ', ' + role.company}">Title, Company</h3>
+    <p class="meta" th:text="${role.location.isEmpty() ? role.period : role.period + '  ·  ' + role.location}">Period</p>
+    <ul th:if="${!role.bullets.isEmpty()}">
+      <li th:each="bullet : ${role.bullets}" th:text="${bullet.text}">Bullet</li>
+    </ul>
+  </th:block>
+
+  <th:block th:if="${!cv.projects.isEmpty()}">
+    <h2>Projects</h2>
+    <th:block th:each="project : ${cv.projects}">
+      <h3 th:text="${project.name}">Project</h3>
+      <p class="meta" th:if="${!project.stack.isEmpty()}" th:text="${project.stack}">Stack</p>
+      <ul>
+        <li th:each="bullet : ${project.bullets}" th:text="${bullet.text}">Bullet</li>
+      </ul>
+    </th:block>
+  </th:block>
+
+  <th:block th:if="${!cv.certificates.isEmpty()}">
+    <h2>Certifications</h2>
+    <ul>
+      <li th:each="certificate : ${cv.certificates}" th:text="${certificate}">Certificate</li>
+    </ul>
+  </th:block>
+
+  <th:block th:if="${!cv.education.isEmpty()}">
+    <h2>Education</h2>
+    <ul>
+      <li th:each="degree : ${cv.education}" th:text="${degree}">Degree</li>
+    </ul>
+  </th:block>
+</body>
+</html>

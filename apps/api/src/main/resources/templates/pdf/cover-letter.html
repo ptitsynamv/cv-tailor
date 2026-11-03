@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="${contact.name} + ' – Cover letter'">Cover letter</title>
+  <style th:replace="~{pdf/common :: styles}"></style>
+</head>
+<body class="letter">
+  <header th:replace="~{pdf/common :: header(${contact})}"></header>
+
+  <p class="date" th:text="${date}">1 January 2027</p>
+  <p><strong th:text="${job.company.isEmpty() ? 'Re: ' + job.title : 'Re: ' + job.title + ' at ' + job.company}">Re: Role at Company</strong></p>
+
+  <p th:text="${letter.greeting}">Dear Hiring Team,</p>
+  <p th:each="paragraph : ${letter.paragraphs}" th:text="${paragraph}">Paragraph</p>
+
+  <p>Kind regards,<br/><span th:text="${contact.name}">Name</span></p>
+</body>
+</html>

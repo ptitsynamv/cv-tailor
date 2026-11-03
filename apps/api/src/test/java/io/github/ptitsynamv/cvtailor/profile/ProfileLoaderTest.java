@@ -3,14 +3,13 @@ package io.github.ptitsynamv.cvtailor.profile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.nio.file.Path;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 class ProfileLoaderTest {
 
-	private static final Path DEMO_PROFILE = Path.of("../../demo-profile");
+	private static final String DEMO_PROFILE = "../../demo-profile";
 
 	private final Profile profile = new ProfileLoader(new ProfileProperties(DEMO_PROFILE)).load();
 
@@ -78,7 +77,7 @@ class ProfileLoaderTest {
 
 	@Test
 	void failsClearlyWhenTheProfileFolderIsMissing() {
-		var loader = new ProfileLoader(new ProfileProperties(Path.of("no-such-profile")));
+		var loader = new ProfileLoader(new ProfileProperties("no-such-profile"));
 
 		assertThatThrownBy(loader::load).isInstanceOf(IllegalStateException.class).hasMessageContaining("PROFILE_DIR");
 	}

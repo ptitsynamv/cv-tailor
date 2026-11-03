@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`. The profile loader, `ClaudeService` (fake + real), `POST /api/job-analysis` and `POST /api/gap-analysis` exist; documents/PDFs (Phase 5 onward) don't yet.
+Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`. The whole backend exists: the profile loader, `ClaudeService` (fake + real) and all three endpoints, including PDFs. The Angular UI (Phase 6 onward) doesn't yet.
 
 **Scope rule:** the MVP is exactly three features: job analysis, gap analysis, and tailored CV + cover letter PDFs. Anything else belongs in the plan's "Later" table. Don't add it unprompted.
 
@@ -48,7 +48,11 @@ POST /api/documents      JobAnalysis + Gaps → TailoredCv + CoverLetter (call 3
     - SDK `com.anthropic:anthropic-java:3.2.0`.
   - `FakeClaudeService` returns `src/main/resources/fake-claude/<step>.json` parsed into the record type. It's active whenever there's no key. Write fixtures for `demo-profile`, using its real ids.
   - The user has no API key yet, so fake mode is the default way to run and demo the app. The app must start and work end to end without a key. Plan steps marked 🔑 need the real key; don't attempt them. Tests and CI never call the real API.
-- **`ProfileLoader`** (package `profile`) reads `app.profile.dir`, set from `PROFILE_DIR` with default `../../demo-profile` relative to `apps/api`. It re-reads the files on every `load()`. Ids:
+- **`ProfileLoader`** (package `profile`) reads `app.profile.dir`, set from `PROFILE_DIR` with default `../../demo-profile` relative to `apps/api`. It re-reads the files on every `load()`.
+  - **Bind path settings as `String`, never `Path`.** Spring converts a `Path` through the resource loader, and under the real embedded server that rejects relative paths like `../../demo-profile`. Mock-servlet tests don't catch this; `CvTailorApiApplicationTests` starts a real server for exactly that reason.
+  - Each `ProfileItem` has `fields`: table cells by column header, and for a role "Company", "Role / Title", "Period", "Location". Code copies these into documents.
+  - `Profile.contact()` comes from `profile/contacts.yaml`. It's never rendered into the text Claude reads.
+  - Ids:
   - `exp-<folder>` for the role summary, and `exp-<folder>-<n>` for each bullet.
   - `proj-<slug>` from the first table in `registry.md`.
   - `skill-<slug>` from every skills-matrix table.
@@ -72,8 +76,17 @@ POST /api/documents      JobAnalysis + Gaps → TailoredCv + CoverLetter (call 3
     - A STRONG/PARTIAL item with no ids becomes a GAP too.
     - A GAP keeps only its valid ids.
     - The `gap-analysis.json` fixture cites one invented id on purpose, so the guardrail is visible in fake mode. Keep it.
-  - Documents: Claude writes only the summary, bullets and letter text. Contact details and education are copied **from the profile in code**, not from the model. Prompts say: use only profile facts, reword but never inflate, CV 1–2 pages, letter ≤ 250 words, ATS-friendly section names.
-- **PDF:** Thymeleaf templates (`cv.html`, `cover-letter.html`) → OpenHTMLtoPDF. One-column, ATS-friendly CSS, no tables or icons.
+  - Documents (package `documents`):
+    - Claude returns a `DocumentsDraft`. It contains only text: summary sentences, skill groups and bullets, each citing `evidenceIds`. Roles and projects are referenced by id.
+    - `CvGuardrail` drops any claim that cites no ids or an unknown id, and drops unknown roles and projects.
+    - `CvAssembler` builds the `TailoredCv`. Titles, companies, dates, project names, contact details, certificates and education all come from profile `fields`. Roles Claude skipped are still listed, without bullets.
+    - The cover letter is checked against the 250-word limit, and a warning is logged if it's over.
+- **PDF:** `PdfRenderer` renders Thymeleaf templates (`templates/pdf/cv.html`, `cover-letter.html`, shared `common.html`), passes them through jsoup's `W3CDom`, then OpenHTMLtoPDF 1.1.95 (the `io.github.openhtmltopdf` fork). Output is tagged PDF/UA.
+  - The layout is one column, with no tables or icons. Contact details use `white-space: nowrap`, so links never break.
+  - Fonts are Noto Sans plus Noto Sans Math as a per-glyph fallback, needed for "→". They're embedded from `resources/fonts` (OFL). The base-14 PDF fonts can't show "–", "’" or "→".
+  - `PdfRendererTest` extracts the text with PDFBox to check these characters.
+- **`POST /api/documents`** returns `DocumentsResponse`: the CV and letter as JSON for the preview, the PDFs as Base64 `byte[]`, `fileBaseName`, and `savedTo`.
+  - PDFs are saved to `OUTPUT_DIR/<yyyy-MM-dd>-<company>-<title>/` only when `app.documents.output-dir` (`OUTPUT_DIR`) is set. Folder names are slugs.
 - **Frontend:** Angular 21+, standalone, **zoneless**, Signals, Tailwind. One page with three steps (paste job → gaps table → document preview + 2 PDF downloads), with state in a small signals-based service. Calls the API through the dev-server proxy. Each step needs loading and error states, and focus moves to each new step's heading.
 
 Note: the global Angular rules in `~/.claude/rules/angular.md` and the `ermes-frontend` skill target a different repo (Angular 16 + NgRx + PrimeNG, `slg-` prefix, `$localize`, `markForCheck`). They don't apply here. Use the modern zoneless/Signals idioms instead.

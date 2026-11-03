@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.nio.file.Path;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,7 @@ class GapAnalysisServiceTest {
 			List.of("5+ years of Angular", "Java"), List.of("Node.js"), List.of("Angular"));
 
 	private final ClaudeService claude = mock(ClaudeService.class);
-	private final ProfileLoader profileLoader = new ProfileLoader(new ProfileProperties(Path.of("../../demo-profile")));
+	private final ProfileLoader profileLoader = new ProfileLoader(new ProfileProperties("../../demo-profile"));
 	private final GapAnalysisService service = new GapAnalysisService(claude, profileLoader);
 
 	@Test
