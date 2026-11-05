@@ -1,3 +1,71 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+
+  /* A clear focus ring for keyboard users; headings focused by code don't need one. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-blue-700;
+  }
+
+  [tabindex='-1']:focus {
+    @apply outline-none;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-lg border border-gray-200 bg-white p-5 shadow-sm;
+  }
+
+  .step-heading {
+    @apply flex items-center gap-2 text-xl font-semibold;
+  }
+
+  .step-number {
+    @apply inline-flex size-7 items-center justify-center rounded-full bg-blue-700 text-sm text-white;
+  }
+
+  .btn-primary {
+    @apply rounded-md bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-gray-400;
+  }
+
+  .btn-secondary {
+    @apply rounded-md border border-gray-400 bg-white px-4 py-2 font-medium hover:bg-gray-100;
+  }
+
+  .error-box {
+    @apply rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800;
+  }
+
+  /* Status badges always carry a text label, so colour is never the only signal. */
+  .badge {
+    @apply inline-block rounded px-2 py-0.5 text-xs font-semibold;
+  }
+
+  .badge-strong {
+    @apply bg-green-100 text-green-900;
+  }
+
+  .badge-partial {
+    @apply bg-amber-100 text-amber-900;
+  }
+
+  .badge-gap {
+    @apply bg-red-100 text-red-900;
+  }
+
+  .preview {
+    @apply rounded-md border border-gray-300 bg-white p-6 text-sm leading-relaxed;
+  }
+
+  .preview-heading {
+    @apply mt-4 border-b border-gray-400 pb-0.5 text-xs font-bold tracking-wide uppercase;
+  }
+
+  .evidence {
+    @apply font-mono text-xs text-blue-800;
+  }
+}

@@ -1,0 +1,68 @@
+<section aria-labelledby="gaps-heading" class="card" [attr.aria-busy]="store.gaps.loading()">
+  <h2 id="gaps-heading" appFocusOnRender class="step-heading">
+    <span class="step-number">2</span> Gaps
+  </h2>
+
+  @if (store.gaps.loading()) {
+    <p role="status" class="mt-3 text-sm text-gray-700">
+      Matching each requirement to your profile. This takes a few seconds.
+    </p>
+  }
+  @if (store.gaps.error(); as message) {
+    <p role="alert" class="error-box mt-3">{{ message }}</p>
+    <button type="button" class="btn-secondary mt-3" (click)="store.findGaps()">Try again</button>
+  }
+
+  @if (store.gaps.value(); as report) {
+    <p class="mt-2 text-sm text-gray-700">
+      {{ counts().strong }} strong, {{ counts().partial }} partial, {{ counts().gap }}
+      {{ counts().gap === 1 ? 'gap' : 'gaps' }}. Every match cites the profile lines it comes from.
+      A match that cites an id missing from your profile is turned into a gap.
+    </p>
+
+    <div class="mt-4 overflow-x-auto">
+      <table class="w-full border-collapse text-left text-sm">
+        <caption class="sr-only">
+          Requirements matched to profile evidence
+        </caption>
+        <thead>
+          <tr class="border-b border-gray-300">
+            <th scope="col" class="py-2 pr-3 font-medium">Requirement</th>
+            <th scope="col" class="py-2 pr-3 font-medium">Match</th>
+            <th scope="col" class="py-2 pr-3 font-medium">Evidence</th>
+            <th scope="col" class="py-2 font-medium">Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of report.items; track $index) {
+            <tr class="border-b border-gray-200 align-top">
+              <th scope="row" class="py-2 pr-3 font-normal">{{ item.requirement }}</th>
+              <td class="py-2 pr-3">
+                <span class="badge" [class]="'badge-' + item.status.toLowerCase()">
+                  {{ statusLabels[item.status] }}
+                </span>
+              </td>
+              <td class="py-2 pr-3">
+                @for (id of item.evidenceIds; track id) {
+                  <code class="block text-xs whitespace-nowrap text-gray-700">{{ id }}</code>
+                } @empty {
+                  <span class="text-gray-500">None</span>
+                }
+              </td>
+              <td class="py-2 text-gray-700">{{ item.note }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <button
+      type="button"
+      class="btn-primary mt-5"
+      [disabled]="store.documents.loading()"
+      (click)="store.generateDocuments()"
+    >
+      Generate documents
+    </button>
+  }
+</section>

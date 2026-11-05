@@ -9,4 +9,9 @@ public interface ClaudeService {
 	/** Sends one request and returns the answer parsed into {@code outputType} via structured outputs. */
 	<T> T generate(ClaudeRequest request, Class<T> outputType);
 
+	/** True when answers are canned fixtures, not real Claude output. The UI shows a demo banner then. */
+	default boolean isFake() {
+		return false;
+	}
+
 }

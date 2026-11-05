@@ -1,4 +1,14 @@
 package io.github.ptitsynamv.cvtailor.health;
 
-public record HealthResponse(String status, String service) {
+/**
+ * @param mode {@code FAKE} when Claude answers are canned fixtures (no API key), {@code LIVE} otherwise
+ */
+public record HealthResponse(String status, String service, ClaudeMode mode) {
+
+	public enum ClaudeMode {
+
+		FAKE, LIVE
+
+	}
+
 }

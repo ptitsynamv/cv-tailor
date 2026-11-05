@@ -47,7 +47,8 @@ class JobAnalysisControllerTest {
 	@Test
 	void rejectsBlankJobText() throws Exception {
 		mockMvc.perform(post("/api/job-analysis").contentType(MediaType.APPLICATION_JSON).content("{\"jobText\": \"  \"}"))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.detail").value("Paste the job post text"));
 
 		verifyNoInteractions(claude);
 	}
@@ -58,7 +59,8 @@ class JobAnalysisControllerTest {
 
 		mockMvc.perform(post("/api/job-analysis").contentType(MediaType.APPLICATION_JSON)
 				.content("{\"jobText\": \"" + tooLong + "\"}"))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.detail").value("Job post is too long (max 20000 characters)"));
 
 		verifyNoInteractions(claude);
 	}

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`. The whole backend exists: the profile loader, `ClaudeService` (fake + real) and all three endpoints, including PDFs. The Angular UI (Phase 6 onward) doesn't yet.
+Early build. `ai-project-plan.md` is the build plan and the source of truth for scope, phases and design (it is gitignored, so it exists only locally). Read it before starting work, and tick its checkboxes as steps are completed. Both apps are scaffolded and connected by `GET /api/health`. The whole backend and the Angular UI exist; it works end to end in fake mode. Next is Phase 7 (CI, README, publish).
 
 **Scope rule:** the MVP is exactly three features: job analysis, gap analysis, and tailored CV + cover letter PDFs. Anything else belongs in the plan's "Later" table. Don't add it unprompted.
 
@@ -65,7 +65,7 @@ POST /api/documents      JobAnalysis + Gaps → TailoredCv + CoverLetter (call 3
   - A service holds the prompt as a `static final` text block and calls `ClaudeService` with a step name. The step name is also the fixture name.
   - The output record carries `@JsonPropertyDescription` (`com.fasterxml.jackson.annotation`, which both Jackson 2 and 3 read). Those descriptions go into the structured-output schema.
   - Use enums for closed sets.
-- **Errors:** errors are returned as problem JSON (`spring.mvc.problemdetails.enabled`). Validation failures are 400. `ClaudeExceptionHandler` maps `ClaudeException` and SDK errors to 502.
+- **Errors:** errors are returned as problem JSON. `common.ApiExceptionHandler` (a `ResponseEntityExceptionHandler`, which replaces Boot's own problem-details handler) puts the Bean Validation messages into `detail`, which the UI shows as is. Validation failures are 400. `ClaudeExceptionHandler` maps `ClaudeException` and SDK errors to 502.
 - **Tests per step:**
   - A `@WebMvcTest` with `@MockitoBean ClaudeService`.
   - A `*SchemaTest` that builds the real `.outputConfig(Record.class)` params, so schema problems surface without a key.
@@ -87,7 +87,12 @@ POST /api/documents      JobAnalysis + Gaps → TailoredCv + CoverLetter (call 3
   - `PdfRendererTest` extracts the text with PDFBox to check these characters.
 - **`POST /api/documents`** returns `DocumentsResponse`: the CV and letter as JSON for the preview, the PDFs as Base64 `byte[]`, `fileBaseName`, and `savedTo`.
   - PDFs are saved to `OUTPUT_DIR/<yyyy-MM-dd>-<company>-<title>/` only when `app.documents.output-dir` (`OUTPUT_DIR`) is set. Folder names are slugs.
-- **Frontend:** Angular 21+, standalone, **zoneless**, Signals, Tailwind. One page with three steps (paste job → gaps table → document preview + 2 PDF downloads), with state in a small signals-based service. Calls the API through the dev-server proxy. Each step needs loading and error states, and focus moves to each new step's heading.
+- **`GET /api/health`** returns `mode: FAKE | LIVE` (from `ClaudeService.isFake()`); the UI shows a "Demo mode" banner for `FAKE`.
+- **Frontend:** Angular 21+, standalone, **zoneless**, Signals, Tailwind. One page with three steps (paste job → gaps table → document preview + 2 PDF downloads). Calls the API through the dev-server proxy.
+  - `api/models.ts` mirrors the backend records by hand; keep them in sync. `api/error-message.ts` turns an `HttpErrorResponse` into the problem `detail`, or an "is the backend running?" message.
+  - `state/tailor-store.ts` (root service) holds one `AsyncStep<T>` per step (`value`, `loading`, `error`, `started` signals). POSTs use `HttpClient`, not `httpResource`. Running a step clears the steps after it.
+  - `steps/` has one component per step. A later step's section renders once `started()` is true. `shared/FocusOnRender` focuses each new step's heading (and the Requirements heading), and shared component classes (`.btn-primary`, `.card`, `.badge-*`) live in `styles.css`.
+  - The documents preview shows evidence ids next to each claim (toggleable); they're never in the PDFs. PDFs are downloaded from the Base64 fields as Blobs.
 
 Note: the global Angular rules in `~/.claude/rules/angular.md` and the `ermes-frontend` skill target a different repo (Angular 16 + NgRx + PrimeNG, `slg-` prefix, `$localize`, `markForCheck`). They don't apply here. Use the modern zoneless/Signals idioms instead.
 
@@ -108,6 +113,6 @@ Frontend (`apps/web`, Angular 22, zoneless, Tailwind 4, Vitest):
 - Dev server: `npm start` (port 4200; `proxy.conf.json` forwards `/api` to :8080, so run `bootRun` too). Port 4200 is often taken by another local project; use `npx ng serve --port 4300` then.
 - Build: `npm run build`
 - Tests: `npx ng test --watch=false`. Run a single file with `npx ng test --watch=false --include src/app/app.spec.ts`.
-- HTTP is read with `httpResource`. In specs, use `TestBed.tick()` before `HttpTestingController.expectOne` instead of `whenStable()`, which waits on the pending request and hangs.
+- In specs, never `await whenStable()` while a request is pending: pending `HttpClient` and `httpResource` requests hold it open, so it hangs. Use `TestBed.tick()` to send the request, and after `flush()` let promises settle (`await new Promise(r => setTimeout(r))`) then `TestBed.tick()`, as in `app.spec.ts`. Spec data lives in `src/app/testing/fixtures.ts`.
 
 CI (GitHub Actions, Phase 7) will run `./gradlew build` and `npm ci && npm run build` on every push. Run a secret scanner (e.g. gitleaks) before pushing anything sensitive-looking; the repo is already public.

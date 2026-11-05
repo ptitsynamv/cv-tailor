@@ -1,0 +1,155 @@
+<section
+  aria-labelledby="documents-heading"
+  class="card"
+  [attr.aria-busy]="store.documents.loading()"
+>
+  <h2 id="documents-heading" appFocusOnRender class="step-heading">
+    <span class="step-number">3</span> Documents
+  </h2>
+
+  @if (store.documents.loading()) {
+    <p role="status" class="mt-3 text-sm text-gray-700">
+      Writing the CV and cover letter from your evidence. This takes a few seconds.
+    </p>
+  }
+  @if (store.documents.error(); as message) {
+    <p role="alert" class="error-box mt-3">{{ message }}</p>
+    <button type="button" class="btn-secondary mt-3" (click)="store.generateDocuments()">
+      Try again
+    </button>
+  }
+
+  @if (store.documents.value(); as documents) {
+    <div class="mt-3 flex flex-wrap items-center gap-3">
+      <button type="button" class="btn-primary" (click)="downloadCv(documents)">
+        Download CV (PDF)
+      </button>
+      <button type="button" class="btn-primary" (click)="downloadLetter(documents)">
+        Download cover letter (PDF)
+      </button>
+      <label class="ml-auto flex items-center gap-2 text-sm">
+        <input type="checkbox" [checked]="showEvidence()" (change)="toggleEvidence($event)" />
+        Show evidence ids
+      </label>
+    </div>
+    @if (documents.savedTo) {
+      <p class="mt-2 text-sm text-gray-700">
+        Also saved to <code class="text-xs">{{ documents.savedTo }}</code>
+      </p>
+    }
+
+    @let cv = documents.cv;
+    <article class="preview mt-5" aria-labelledby="cv-preview-heading">
+      <h3 id="cv-preview-heading" class="sr-only">CV preview</h3>
+      <p class="text-2xl font-bold">{{ cv.contact.name }}</p>
+      @if (cv.contact.headline) {
+        <p>{{ cv.contact.headline }}</p>
+      }
+      <p class="mt-1 text-xs text-gray-700">{{ contactLine(cv.contact) }}</p>
+
+      @if (cv.summary.length) {
+        <h4 class="preview-heading">Summary</h4>
+        <p>
+          <!-- &ngsp; is a space Angular never strips, so the sentences don't run together. -->
+          @for (sentence of cv.summary; track $index) {
+            <span>{{ sentence.text }}</span>
+            @if (showEvidence()) {
+              &ngsp;<span class="evidence">[{{ sentence.evidenceIds.join(', ') }}]</span>
+            }
+            &ngsp;
+          }
+        </p>
+      }
+
+      @if (cv.skills.length) {
+        <h4 class="preview-heading">Skills</h4>
+        <ul>
+          @for (group of cv.skills; track $index) {
+            <li>
+              <strong>{{ group.name }}:</strong> {{ group.skills.join(', ') }}
+              @if (showEvidence()) {
+                <span class="evidence">[{{ group.evidenceIds.join(', ') }}]</span>
+              }
+            </li>
+          }
+        </ul>
+      }
+
+      @if (cv.experience.length) {
+        <h4 class="preview-heading">Experience</h4>
+        @for (role of cv.experience; track role.id) {
+          <p class="mt-2 font-semibold">{{ role.title }}, {{ role.company }}</p>
+          <p class="text-xs text-gray-700">
+            {{ role.period }}{{ role.location ? '  ·  ' + role.location : '' }}
+          </p>
+          <ul class="list-disc pl-5">
+            @for (bullet of role.bullets; track $index) {
+              <li>
+                {{ bullet.text }}
+                @if (showEvidence()) {
+                  <span class="evidence">[{{ bullet.evidenceIds.join(', ') }}]</span>
+                }
+              </li>
+            }
+          </ul>
+        }
+      }
+
+      @if (cv.projects.length) {
+        <h4 class="preview-heading">Projects</h4>
+        @for (project of cv.projects; track project.id) {
+          <p class="mt-2 font-semibold">{{ project.name }}</p>
+          @if (project.stack) {
+            <p class="text-xs text-gray-700">{{ project.stack }}</p>
+          }
+          <ul class="list-disc pl-5">
+            @for (bullet of project.bullets; track $index) {
+              <li>
+                {{ bullet.text }}
+                @if (showEvidence()) {
+                  <span class="evidence">[{{ bullet.evidenceIds.join(', ') }}]</span>
+                }
+              </li>
+            }
+          </ul>
+        }
+      }
+
+      @if (cv.certificates.length) {
+        <h4 class="preview-heading">Certifications</h4>
+        <ul>
+          @for (certificate of cv.certificates; track $index) {
+            <li>{{ certificate }}</li>
+          }
+        </ul>
+      }
+
+      @if (cv.education.length) {
+        <h4 class="preview-heading">Education</h4>
+        <ul>
+          @for (degree of cv.education; track $index) {
+            <li>{{ degree }}</li>
+          }
+        </ul>
+      }
+    </article>
+
+    <article class="preview mt-5" aria-labelledby="letter-preview-heading">
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 id="letter-preview-heading" class="text-lg font-semibold">Cover letter</h3>
+        <p
+          class="text-xs"
+          [class.text-red-700]="letterWords() > maxLetterWords"
+          [class.text-gray-700]="letterWords() <= maxLetterWords"
+        >
+          {{ letterWords() }} / {{ maxLetterWords }} words
+        </p>
+      </div>
+      <p class="mt-3">{{ documents.coverLetter.greeting }}</p>
+      @for (paragraph of documents.coverLetter.paragraphs; track $index) {
+        <p class="mt-3">{{ paragraph }}</p>
+      }
+      <p class="mt-3">Kind regards,<br />{{ cv.contact.name }}</p>
+    </article>
+  }
+</section>

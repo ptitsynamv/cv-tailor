@@ -25,6 +25,11 @@ public class FakeClaudeService implements ClaudeService {
 	}
 
 	@Override
+	public boolean isFake() {
+		return true;
+	}
+
+	@Override
 	public <T> T generate(ClaudeRequest request, Class<T> outputType) {
 		String path = FIXTURE_DIR + request.step() + ".json";
 		var fixture = new ClassPathResource(path);
