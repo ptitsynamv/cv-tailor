@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.validation.Valid;
+
 import io.github.ptitsynamv.cvtailor.job.JobAnalysis;
 
 @RestController
@@ -21,7 +23,7 @@ public class GapAnalysisController {
 
 	/** Takes the {@link JobAnalysis} from the previous step, possibly edited by the user. */
 	@PostMapping("/gap-analysis")
-	public GapReport analyze(@RequestBody JobAnalysis job) {
+	public GapReport analyze(@Valid @RequestBody JobAnalysis job) {
 		if (job.mustHave().isEmpty() && job.niceToHave().isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The job analysis has no requirements to match");
 		}

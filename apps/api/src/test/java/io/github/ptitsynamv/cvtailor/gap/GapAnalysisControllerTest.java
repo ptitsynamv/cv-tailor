@@ -51,6 +51,17 @@ class GapAnalysisControllerTest {
 	}
 
 	@Test
+	void rejectsAJobAnalysisWithANullField() throws Exception {
+		mockMvc.perform(post("/api/gap-analysis").contentType(MediaType.APPLICATION_JSON).content("""
+				{"title": null, "company": "Acme", "seniority": "SENIOR",
+				 "mustHave": ["Angular"], "niceToHave": [], "keywords": []}"""))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.detail").value("The job analysis is missing its title"));
+
+		verifyNoInteractions(service);
+	}
+
+	@Test
 	void rejectsAMalformedBody() throws Exception {
 		mockMvc.perform(post("/api/gap-analysis").contentType(MediaType.APPLICATION_JSON).content("{\"title\": \"x\"}"))
 				.andExpect(status().isBadRequest());

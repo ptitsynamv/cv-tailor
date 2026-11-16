@@ -17,7 +17,7 @@ class ClaudeExceptionHandler {
 
 	@ExceptionHandler(ClaudeException.class)
 	ProblemDetail handleClaude(ClaudeException e) {
-		log.warn("Claude call failed: {}", e.getMessage());
+		log.warn("Claude call failed: {}", e.getMessage(), e);
 		return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, e.getMessage());
 	}
 

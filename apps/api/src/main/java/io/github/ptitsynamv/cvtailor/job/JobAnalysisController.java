@@ -1,10 +1,11 @@
 package io.github.ptitsynamv.cvtailor.job;
 
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -17,7 +18,7 @@ public class JobAnalysisController {
 	}
 
 	@PostMapping("/job-analysis")
-	public JobAnalysis analyze(@Validated @RequestBody JobAnalysisRequest request) {
+	public JobAnalysis analyze(@Valid @RequestBody JobAnalysisRequest request) {
 		return service.analyze(request.jobText());
 	}
 

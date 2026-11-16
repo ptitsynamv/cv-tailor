@@ -23,10 +23,6 @@ public record Profile(List<ProfileItem> items, List<String> doNotClaim, Contact 
 		return items.stream().map(ProfileItem::id).collect(Collectors.toUnmodifiableSet());
 	}
 
-	public boolean hasItem(String id) {
-		return items.stream().anyMatch(item -> item.id().equals(id));
-	}
-
 	public Optional<ProfileItem> item(String id) {
 		return items.stream().filter(item -> item.id().equals(id)).findFirst();
 	}

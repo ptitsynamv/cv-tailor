@@ -13,7 +13,11 @@ public record CoverLetter(
 	}
 
 	public int wordCount() {
-		return paragraphs.stream().mapToInt(paragraph -> paragraph.split("\\s+").length).sum();
+		return paragraphs.stream()
+				.map(String::strip)
+				.filter(paragraph -> !paragraph.isEmpty())
+				.mapToInt(paragraph -> paragraph.split("\\s+").length)
+				.sum();
 	}
 
 }

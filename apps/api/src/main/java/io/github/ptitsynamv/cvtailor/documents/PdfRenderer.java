@@ -42,7 +42,6 @@ public class PdfRenderer {
 		var pdf = new ByteArrayOutputStream();
 		try {
 			new PdfRendererBuilder()
-					.useFastMode()
 					.usePdfUaAccessibility(true)
 					.useFont(font("NotoSans-Regular.ttf"), FONT_FAMILY, 400, FontStyle.NORMAL, true)
 					.useFont(font("NotoSans-Bold.ttf"), FONT_FAMILY, 700, FontStyle.NORMAL, true)

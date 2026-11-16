@@ -56,6 +56,17 @@ class DocumentsControllerTest {
 	}
 
 	@Test
+	void rejectsAGapItemWithANullField() throws Exception {
+		mockMvc.perform(post("/api/documents").contentType(MediaType.APPLICATION_JSON).content("""
+				{"job": %s, "gaps": {"items": [{"requirement": "Angular", "status": "STRONG",
+				 "evidenceIds": ["skill-angular"], "note": null}]}}""".formatted(JOB)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.detail").value("A gap item is missing its note"));
+
+		verifyNoInteractions(service);
+	}
+
+	@Test
 	void rejectsAnEmptyGapAnalysis() throws Exception {
 		mockMvc.perform(post("/api/documents").contentType(MediaType.APPLICATION_JSON)
 				.content("{\"job\": " + JOB + ", \"gaps\": {\"items\": []}}"))

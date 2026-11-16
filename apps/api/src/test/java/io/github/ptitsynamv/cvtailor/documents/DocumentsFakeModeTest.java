@@ -7,13 +7,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -26,6 +31,18 @@ import tools.jackson.databind.json.JsonMapper;
 @SpringBootTest(properties = "ANTHROPIC_API_KEY=")
 @AutoConfigureMockMvc
 class DocumentsFakeModeTest {
+
+	/** Pins the date the output folder is named after, so the test can't fail at midnight. */
+	@TestConfiguration(proxyBeanMethods = false)
+	static class FixedClockConfig {
+
+		@Bean
+		@Primary
+		Clock fixedClock() {
+			return Clock.fixed(Instant.parse("2026-11-03T10:00:00Z"), ZoneOffset.UTC);
+		}
+
+	}
 
 	@TempDir
 	private static Path outputDir;
@@ -58,7 +75,7 @@ class DocumentsFakeModeTest {
 		assertThat(response.fileBaseName()).isEqualTo("alex-doe-wix");
 		assertThat(new String(response.cvPdf(), 0, 5)).isEqualTo("%PDF-");
 
-		Path folder = outputDir.resolve(LocalDate.now() + "-wix-ai-native-xengineer-with-frontend-core");
+		Path folder = outputDir.resolve("2026-11-03-wix-ai-native-xengineer-with-frontend-core");
 		assertThat(response.savedTo()).isEqualTo(folder.toAbsolutePath().normalize().toString());
 		assertThat(Files.readAllBytes(folder.resolve("cv.pdf"))).isEqualTo(response.cvPdf());
 		assertThat(Files.readAllBytes(folder.resolve("cover-letter.pdf"))).isEqualTo(response.coverLetterPdf());

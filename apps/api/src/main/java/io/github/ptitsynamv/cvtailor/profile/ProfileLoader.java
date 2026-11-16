@@ -52,11 +52,12 @@ public class ProfileLoader {
 			items.addAll(experience(experienceFile, usedIds));
 		}
 		items.addAll(firstTableRows("projects/registry.md", ProfileSection.PROJECT, "proj", usedIds));
-		items.addAll(skills(usedIds));
+		Map<String, List<String>> skillSections = Markdown.sections(readLines(profileDir.resolve("profile/skills-matrix.md")));
+		items.addAll(skills(skillSections, usedIds));
 		items.addAll(firstTableRows("certificates/data.md", ProfileSection.CERTIFICATE, "cert", usedIds));
 		items.addAll(firstTableRows("education/data.md", ProfileSection.EDUCATION, "edu", usedIds));
 
-		Profile profile = new Profile(items, doNotClaim(), contact());
+		Profile profile = new Profile(items, doNotClaim(skillSections), contact());
 		log.info("Loaded profile from {}: {} items", profileDir, items.size());
 		return profile;
 	}
@@ -108,9 +109,9 @@ public class ProfileLoader {
 		return items;
 	}
 
-	private List<ProfileItem> skills(Set<String> usedIds) {
+	private static List<ProfileItem> skills(Map<String, List<String>> skillSections, Set<String> usedIds) {
 		List<ProfileItem> items = new ArrayList<>();
-		for (Map.Entry<String, List<String>> section : skillSections().entrySet()) {
+		for (Map.Entry<String, List<String>> section : skillSections.entrySet()) {
 			if (isNotEvidenced(section.getKey())) {
 				continue;
 			}
@@ -121,8 +122,8 @@ public class ProfileLoader {
 		return items;
 	}
 
-	private List<String> doNotClaim() {
-		return skillSections().entrySet().stream()
+	private static List<String> doNotClaim(Map<String, List<String>> skillSections) {
+		return skillSections.entrySet().stream()
 				.filter(section -> isNotEvidenced(section.getKey()))
 				.flatMap(section -> Markdown.bullets(section.getValue()).stream())
 				.toList();
@@ -134,14 +135,15 @@ public class ProfileLoader {
 			log.warn("Profile file missing, skipped: {}", file);
 			return Contact.EMPTY;
 		}
-		Map<String, Object> yaml;
+		Object loaded;
 		try (var reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-			yaml = new Yaml().load(reader);
+			loaded = new Yaml().load(reader);
 		}
 		catch (IOException e) {
 			throw new UncheckedIOException("Can't read " + file, e);
 		}
-		if (yaml == null) {
+		if (!(loaded instanceof Map<?, ?> yaml)) {
+			log.warn("Expected a YAML mapping in {}, skipped", file);
 			return Contact.EMPTY;
 		}
 
@@ -171,10 +173,6 @@ public class ProfileLoader {
 
 	private static String text(Object value) {
 		return value == null ? "" : value.toString().strip();
-	}
-
-	private Map<String, List<String>> skillSections() {
-		return Markdown.sections(readLines(profileDir.resolve("profile/skills-matrix.md")));
 	}
 
 	private List<ProfileItem> firstTableRows(String relativePath, ProfileSection section, String prefix,

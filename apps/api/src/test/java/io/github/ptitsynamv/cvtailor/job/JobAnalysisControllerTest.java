@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.anthropic.errors.AnthropicIoException;
+
 import io.github.ptitsynamv.cvtailor.claude.ClaudeException;
 import io.github.ptitsynamv.cvtailor.claude.ClaudeService;
 
@@ -74,6 +76,16 @@ class JobAnalysisControllerTest {
 				.content("{\"jobText\": \"Senior Frontend Engineer\"}"))
 				.andExpect(status().isBadGateway())
 				.andExpect(jsonPath("$.detail").value("Claude stopped with max_tokens at step 'job-analysis'"));
+	}
+
+	@Test
+	void reportsAnSdkErrorAsBadGateway() throws Exception {
+		when(claude.generate(any(), eq(JobAnalysis.class))).thenThrow(new AnthropicIoException("Connection reset"));
+
+		mockMvc.perform(post("/api/job-analysis").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"jobText\": \"Senior Frontend Engineer\"}"))
+				.andExpect(status().isBadGateway())
+				.andExpect(jsonPath("$.detail").value("The Claude API request failed: Connection reset"));
 	}
 
 }
